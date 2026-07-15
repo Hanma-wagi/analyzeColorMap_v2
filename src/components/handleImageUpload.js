@@ -1,4 +1,10 @@
 import extractHSV from "./extractHSV";
+import {
+  processHSVFrequencyData,
+  generateHueLabelsAndData,
+  generateSaturationLabelsAndData,
+  generateValueLabelsAndData,
+} from "./data-processor";
 
 export default function handleImageUpload(event, setter) {
   const file = event.target.files[0];
@@ -41,7 +47,17 @@ export default function handleImageUpload(event, setter) {
     // 画像を縮小して描画
     ctx.drawImage(img, 0, 0, newWidth, newHeight);
 
-    setter(extractHSV(ctx, newWidth, newHeight));
+    //imgData(チャート用データ)オブジェクトを設定
+    const imgData = extractHSV(ctx, newWidth, newHeight);
+    imgData.hsvFrequency = processHSVFrequencyData(
+      imgData.hsvData,
+      imgData.allPixelAmount,
+    );
+    imgData.saturationData = generateSaturationLabelsAndData(
+      imgData.hsvFrequency.saturationCounts,
+      imgData.allPixelAmount,
+    );
+    setter(imgData);
   };
 
   reader.readAsDataURL(file);
