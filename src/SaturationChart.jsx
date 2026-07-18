@@ -7,6 +7,7 @@ export default function SaturationChart(props) {
     <>
       {props.saturationData?.data && (
         <BarChart
+          height={100}
           series={[{ data: props.saturationData.data }]}
           xAxis={[{ data: props.saturationData.labels }]}
         />

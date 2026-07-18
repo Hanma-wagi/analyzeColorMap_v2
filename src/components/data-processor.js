@@ -22,12 +22,12 @@ function processHSVFrequencyData(hsvData, allPixelAmount) {
   const svCounts = new Array(21 * 21);
   for (let i = 0; i < 21; i++) {
     for (let j = 0; j < 21; j++) {
-      svCounts[i * 21 + j] = { x: i * 5, y: j * 5, r: 0 };
+      svCounts[i * 21 + j] = { x: i * 5, y: j * 5, sizeValue: 0 };
     }
   }
 
-  const saturationCounts = new Array(101).fill(0);
-  const valueCounts = new Array(101).fill(0);
+  const saturationCounts = new Array(21).fill(0);
+  const valueCounts = new Array(21).fill(0);
 
   // HSV 値の頻度を記録
   hsvData.forEach((hsv) => {
@@ -37,15 +37,15 @@ function processHSVFrequencyData(hsvData, allPixelAmount) {
     //  else {
     //   console.log(hsv);
     // }
-    svCounts[(hsv.s / 5) * 21 + hsv.v / 5].r += hsv.amount;
+    svCounts[(hsv.s / 5) * 21 + hsv.v / 5].sizeValue += hsv.amount;
 
-    saturationCounts[hsv.s] += hsv.amount;
-    valueCounts[hsv.v] += hsv.amount;
+    saturationCounts[Math.floor(hsv.s / 5)] += hsv.amount;
+    valueCounts[Math.floor(hsv.v / 5)] += hsv.amount;
   });
 
   // svCounts の r をパーセント反映できるように調整
   svCounts.forEach((item) => {
-    item.r = (item.r / allPixelAmount) * 100;
+    item.sizeValue = (item.sizeValue / allPixelAmount) * 100;
   });
 
   return {
@@ -78,7 +78,7 @@ function generateHueLabelsAndData(hueCounts, allPixelAmount) {
  * @returns {Object} { labels, data }
  */
 function generateSaturationLabelsAndData(saturationCounts, allPixelAmount) {
-  const labels = Array.from({ length: 101 }, (_, i) => i);
+  const labels = Array.from({ length: 21 }, (_, i) => i * 5);
   const data = saturationCounts.map((count) => (count / allPixelAmount) * 100);
   return { labels, data };
 }
@@ -90,7 +90,7 @@ function generateSaturationLabelsAndData(saturationCounts, allPixelAmount) {
  * @returns {Object} ラベルとデータ
  */
 function generateValueLabelsAndData(valueCounts, allPixelAmount) {
-  const labels = Array.from({ length: 101 }, (_, i) => i);
+  const labels = Array.from({ length: 21 }, (_, i) => i * 5);
   const data = valueCounts.map((count) => (count / allPixelAmount) * 100);
   return { labels, data };
 }
